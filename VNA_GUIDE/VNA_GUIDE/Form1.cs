@@ -426,43 +426,75 @@ namespace VNA_GUIDE
         //    }
         //    //Console.Write(hexString + "\n");
         //}
+
         private void serialPort1_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            byte[] buffer = new byte[32 * 101];
-            int bytesRead = serialPort1.Read(buffer, 0, buffer.Length);
 
-            
-
-            for (int i = 0; i < 101; i++)
+            try
+            {
+                if (DoneScan == false)
                 {
-                    byte receivedChecksum = buffer[31]; // Giả sử checksum là byte cuối cùng
-                    byte calculatedChecksum = CalculateChecksum(buffer);
 
-                string hexString = BitConverter.ToString(buffer, 32 * i, 31).Replace("-", "");
-                Console.Write(hexString + "\n");
-                if (calculatedChecksum == receivedChecksum)
+
+                    int totalBytesToRead = 32 * int.Parse(cbNumberPoint.SelectedItem.ToString()); // Độ dài tổng của dữ liệu mong đợi
+                    byte[] buffer = new byte[totalBytesToRead];
+                    int totalBytesRead = 0;
+
+                    while (totalBytesRead < totalBytesToRead && serialPort1.IsOpen)
                     {
-                    
+                        int bytesRead = serialPort1.Read(buffer, totalBytesRead, totalBytesToRead - totalBytesRead);
+                        if (bytesRead == 0)
+                        {
+                            throw new Exception("Không nhận được thêm dữ liệu từ cổng serial.");
+                        }
+                        totalBytesRead += bytesRead;
                     }
 
+                    if (serialPort1.IsOpen)
+                    {
+                        Console.WriteLine(BitConverter.ToString(buffer).Replace("-", ""));
+
+                        int bytesPerSegment = 32;
+                        for (int i = 0; i < totalBytesRead; i += bytesPerSegment)
+                        {
+                            int length = Math.Min(bytesPerSegment, totalBytesRead - i);
+                            string hexString = BitConverter.ToString(buffer, i, length).Replace("-", "");
+
+                            Dictionary<string, double> decodedValues = DecodeFrame(hexString);
+                            int freqIndex = int.Parse(decodedValues["freqIndex"].ToString());
+
+                            double parameterS11 = CalculateS11(decodedValues["rev0Re"], decodedValues["rev0Im"], decodedValues["rev1Re"], decodedValues["rev1Im"], decodedValues["freqIndex"]);
+                            double parameterS21 = CalculateS21(decodedValues["rev0Re"], decodedValues["rev0Im"], decodedValues["rev1Re"], decodedValues["rev1Im"], decodedValues["freqIndex"]);
+                            Console.Write(freqIndex + ": " + parameterS11+"\t" + parameterS21 + "\t");
+
+                            Listdata.Add(hexString);
+
+                            if (freqIndex == (int.Parse(cbNumberPoint.SelectedItem.ToString()) - 1))
+                            {
+                                DoneScan = true;
+                                ctnScan = 0;
+                                richTextBox1.AppendText("leave USB data mode\n");
+                                serialPort1.Write(new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, 0, 8);
+                                serialPort1.Write(new byte[] { 0x20, 0x26, 0x02 }, 0, 3);
+                            }
+                        }
+                    }
                 }
-            
-           
+            }
+            catch (Exception ex)
+            {
+               
+            }
 
         }
 
-        private static List<string> FilterNonZeroData(List<string> data)
-        {
-            return data.FindAll(hexString => hexString.IndexOf('0') != 0 || hexString.Trim('0').Length > 0);
-        }
+
         private void StartListeningSerialPort1()
         {
-            // Đăng ký lại sự kiện DataReceived để tiếp tục nhận dữ liệu
             serialPort1.DataReceived += serialPort1_DataReceived;
         }
         private void StopListeningSerialPort1()
         {
-            // Gỡ bỏ sự kiện DataReceived để ngừng nhận dữ liệu
             serialPort1.DataReceived -= serialPort1_DataReceived;
         }
 
@@ -881,8 +913,6 @@ namespace VNA_GUIDE
         {
            
             groupBox5.Enabled = false;
-            groupBox10.Enabled = false;
-            groupBox9.Enabled = false;
             groupBox8.Enabled = false;
             btnExport.Enabled   = false;
             groupBox2.Enabled = false;
@@ -893,8 +923,7 @@ namespace VNA_GUIDE
         {
            
             groupBox5.Enabled = true;
-            groupBox10.Enabled = true;
-            groupBox9.Enabled = true;
+
             groupBox8.Enabled = true;
             btnExport.Enabled = true;
             groupBox2.Enabled = true;
@@ -999,12 +1028,12 @@ namespace VNA_GUIDE
 
                 }
 
-                for (int i = 0; i <= 100; i++)
-                {
-                    Console.Write(freqIndexListS11[i] + ":\t"); //+ parameterListS11[i] + "\t"
+                //for (int i = 0; i <= 100; i++)
+                //{
+                //    Console.Write(freqIndexListS11[i] + ":\t"); //+ parameterListS11[i] + "\t"
 
-                }
-                Console.Write("\n");
+                //}
+                //Console.Write("\n");
                 foreach (string line in Listdata)
                 {
 
@@ -1030,26 +1059,24 @@ namespace VNA_GUIDE
 
                 }
 
-                for (int i = 0; i <= 100; i++)
-                {
-                    Console.Write(freqIndexListS11[i] + ":\t");
+                //for (int i = 0; i <= 100; i++)
+                //{
+                //    Console.Write(freqIndexListS11[i] + ":\t");
 
-                }
+                //}
                 //(freqIndexListS21, parameterListS21) = SortDataBasedOnZero(freqIndexListS21, parameterListS21);
 
 
 
-                //int ctnS21 = 0;
-                //foreach (string line in Listdata)
-                //{
-                //    Dictionary<string, double> decodedValues = DecodeFrame(line);
-                //    double parameterS21 = CalculateS21(decodedValues["rev0Re"], decodedValues["rev0Im"], decodedValues["rev1Re"], decodedValues["rev1Im"], decodedValues["freqIndex"]);
-                //     //Console.WriteLine(ctnS21);
-                //    freqIndexListS21[ctnS21] = ctnS21;
-                //    parameterListS21[ctnS21] = parameterS21;
-                //    ctnS21++;
+                foreach (string line in Listdata)
+                {
+                    Dictionary<string, double> decodedValues = DecodeFrame(line);
+                    double parameterS21 = CalculateS21(decodedValues["rev0Re"], decodedValues["rev0Im"], decodedValues["rev1Re"], decodedValues["rev1Im"], decodedValues["freqIndex"]);
+                    //Console.WriteLine(ctnS21);
+                    freqIndexListS21[(int)decodedValues["freqIndex"]] = decodedValues["freqIndex"];
+                    parameterListS21[(int)decodedValues["freqIndex"]] = parameterS21;
 
-                //}
+                }
 
                 ExportToExcel(freqIndexListS11, parameterListS11, filePathS11, ctnAutoExcel, (ctnAutoExcel -1)* int.Parse(txtStepValue.Text));
                 ExportToExcel(freqIndexListS21, parameterListS21, filePathS21, ctnAutoExcel, (ctnAutoExcel - 1) * int.Parse(txtStepValue.Text));
@@ -1585,51 +1612,51 @@ namespace VNA_GUIDE
                 parameterListS21.Add(parameterS21);
             }
 
-            for (int i = 0; i < freqIndexListS11.Count; i++)
-            {
-                Console.Write(freqIndexListS11[i] + ":\t");
-                
-            }
+            //for (int i = 0; i < freqIndexListS11.Count; i++)
+            //{
+            //    Console.Write(freqIndexListS11[i] + ":\t");
+
+            //}
+            //Console.Write("\n");
+            //// error this is
+
+            //(freqIndexListS11, parameterListS11) = SortDataBasedOnZero(freqIndexListS11, parameterListS11);
+
             Console.Write("\n");
-            // error this is
+            foreach (string line in Listdata)
+            {
+                Dictionary<string, double> decodedValues = DecodeFrame(line);
+                double parameterS11 = CalculateS11(decodedValues["fwd0Re"], decodedValues["fwd0Im"], decodedValues["rev0Re"], decodedValues["rev0Im"], decodedValues["freqIndex"]);
+                //reqIndexList.Add(lineNumber);
+                //Console.Write(ctnS11 + "\t");
 
-            (freqIndexListS11, parameterListS11) = SortDataBasedOnZero(freqIndexListS11, parameterListS11);
-
-
-            //foreach (string line in Listdata)
-            //{
-            //    Dictionary<string, double> decodedValues = DecodeFrame(line);
-            //    double parameterS11 = CalculateS11(decodedValues["fwd0Re"], decodedValues["fwd0Im"], decodedValues["rev0Re"], decodedValues["rev0Im"], decodedValues["freqIndex"]);
-            //    //reqIndexList.Add(lineNumber);
-            //    //Console.Write(ctnS11 + "\t");
-
-            //    freqIndexListS11[(int)decodedValues["freqIndex"]] = decodedValues["freqIndex"];
-            //    parameterListS11[(int)decodedValues["freqIndex"]] = parameterS11;
-
-            //}
+                freqIndexListS11[(int)decodedValues["freqIndex"]] = decodedValues["freqIndex"];
+                parameterListS11[(int)decodedValues["freqIndex"]] = parameterS11;
+                Console.Write(parameterS11 + "\t");
+            }
 
 
-             (freqIndexListS21, parameterListS21) = SortDataBasedOnZero(freqIndexListS21, parameterListS21);
+            //(freqIndexListS21, parameterListS21) = SortDataBasedOnZero(freqIndexListS21, parameterListS21);
 
 
 
-      
-            //foreach (string line in Listdata)
-            //{
-            //    Dictionary<string, double> decodedValues = DecodeFrame(line);
-            //    double parameterS21 = CalculateS21(decodedValues["rev0Re"], decodedValues["rev0Im"], decodedValues["rev1Re"], decodedValues["rev1Im"], decodedValues["freqIndex"]);
-            //    //Console.WriteLine(ctnS21);
-            //    freqIndexListS21[(int)decodedValues["freqIndex"]] = decodedValues["freqIndex"];
-            //    parameterListS21[(int)decodedValues["freqIndex"]] = parameterS21;
-           
+            Console.Write("\n");
+            foreach (string line in Listdata)
+            {
+                Dictionary<string, double> decodedValues = DecodeFrame(line);
+                double parameterS21 = CalculateS21(decodedValues["rev0Re"], decodedValues["rev0Im"], decodedValues["rev1Re"], decodedValues["rev1Im"], decodedValues["freqIndex"]);
+                
+                freqIndexListS21[(int)decodedValues["freqIndex"]] = decodedValues["freqIndex"];
+                parameterListS21[(int)decodedValues["freqIndex"]] = parameterS21;
+                Console.Write(parameterS21+"\t");
 
-            //}
+            }
 
 
 
             for (int i = 0; i < freqIndexListS11.Count; i++)
             {
-                Console.Write(freqIndexListS11[i] + ":\t");
+
                 chart1.Series["S11"].Points.AddXY(freqIndexListS11[i], parameterListS11[i]);
             }
             Console.Write("\n");

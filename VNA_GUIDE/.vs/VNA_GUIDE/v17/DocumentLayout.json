@@ -11,6 +11,9 @@
       "RelativeMoniker": "D:0:0:{2AF953C3-75C2-4054-87BE-0FE8E614A699}|VNA_GUIDE\\VNA_GUIDE.csproj|solutionrelative:vna_guide\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\HMQUYET\\AppData\\Local\\Temp\\.vsdbgsrc\\75694d2547780f2e1f98bc3e8254ce710fd8b30d9d51a8c245efeafcabaea03b\\Form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\HMQUYET\\AppData\\Local\\Temp\\.vsdbgsrc\\a7b1ebd45576bba877f75198c1437cd7adbf9170c7f69a95d13db200a3223f0d\\Form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -35,7 +38,7 @@
               "RelativeDocumentMoniker": "VNA_GUIDE\\Form1.cs",
               "ToolTip": "D:\\NextwaveIndustries\\liteVNA\\Program\\VNA_GUIDE\\VNA_GUIDE\\Form1.cs",
               "RelativeToolTip": "VNA_GUIDE\\Form1.cs",
-              "ViewState": "AQIAAKkBAAAAAAAAAAAwwLEBAAAMAAAA",
+              "ViewState": "AQIAALgEAAAAAAAAAAAawMIEAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-05-13T09:12:49.952Z",
               "IsPinned": true,
@@ -49,6 +52,16 @@
               "$type": "Document",
               "DocumentIndex": 2,
               "Title": "Form1.cs",
+              "DocumentMoniker": "C:\\Users\\HMQUYET\\AppData\\Local\\Temp\\.vsdbgsrc\\75694d2547780f2e1f98bc3e8254ce710fd8b30d9d51a8c245efeafcabaea03b\\Form1.cs",
+              "ToolTip": "C:\\Users\\HMQUYET\\AppData\\Local\\Temp\\.vsdbgsrc\\75694d2547780f2e1f98bc3e8254ce710fd8b30d9d51a8c245efeafcabaea03b\\Form1.cs",
+              "ViewState": "AQIAACgCAAAAAAAAAAAmwD4CAAAQAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-16T08:50:42.674Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Form1.cs",
               "DocumentMoniker": "C:\\Users\\HMQUYET\\AppData\\Local\\Temp\\.vsdbgsrc\\a7b1ebd45576bba877f75198c1437cd7adbf9170c7f69a95d13db200a3223f0d\\Form1.cs",
               "ToolTip": "C:\\Users\\HMQUYET\\AppData\\Local\\Temp\\.vsdbgsrc\\a7b1ebd45576bba877f75198c1437cd7adbf9170c7f69a95d13db200a3223f0d\\Form1.cs",
               "ViewState": "AQIAAKMGAAAAAAAAAAAQwLUGAAAzAAAA",
@@ -57,7 +70,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "Form1.Designer.cs",
               "DocumentMoniker": "D:\\NextwaveIndustries\\liteVNA\\Program\\VNA_GUIDE\\VNA_GUIDE\\Form1.Designer.cs",
               "RelativeDocumentMoniker": "VNA_GUIDE\\Form1.Designer.cs",
